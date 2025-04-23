@@ -1,17 +1,14 @@
 from pydantic import BaseModel, HttpUrl
 from typing import Optional
 
-class ProjectIn(BaseModel):
+class GmbIn(BaseModel):
     name: str
     client_id: str
-    project_type: str
-    focus: str
-    about: str
 
     # Hidden fields
     date: Optional[str] = None
     last_update_date: Optional[str] = None
     status: Optional[str] = None
 
-class ProjectOut(ProjectIn):
+class GmbOut(GmbIn):
     id: str

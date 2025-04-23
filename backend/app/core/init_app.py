@@ -2,6 +2,7 @@ from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from app.api.clients_router import router as clients_router
 from app.api.projects_router import router as projects_router
+from app.api.gmb_router import router as gmb_router
 from app.db.mongo import MongoDB
 from app.core.logging import setup_logging
 
@@ -26,6 +27,8 @@ def create_app() -> FastAPI:
 
     app.include_router(clients_router, prefix="/clients", tags=["Clients"])
     app.include_router(projects_router, prefix="/projects", tags=["Projects"])
+    app.include_router(gmb_router, prefix="/gmb", tags=["Gmb"])
+
 
 
     @app.on_event("startup")

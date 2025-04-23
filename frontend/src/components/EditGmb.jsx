@@ -1,11 +1,11 @@
 import { useForm } from "react-hook-form";
 import { toast, ToastContainer } from "react-toastify";
-import { getClients } from "../api/client";
-import { getProjectById, updateProject } from "../api/project";
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { getClients } from "../api/client";
+import { getGmbById, updateGmb } from "../api/gmb";
 
-const EditProject = () => {
+const EditGMB = () => {
   const { id } = useParams();
   const navigate = useNavigate();
 
@@ -23,32 +23,33 @@ const EditProject = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [clientRes, projectRes] = await Promise.all([
+        const [clientRes, gmbRes] = await Promise.all([
           getClients(),
-          getProjectById(id),
+          getGmbById(id),
         ]);
 
         const clientList = clientRes.data || [];
-        const projectData = projectRes.data;
+        const gmbData = gmbRes.data;
 
         setClients(clientList);
 
-        const fieldsToSet = ["name", "client_id", "project_type", "status", "focus", "about"];
+        const fieldsToSet = ["name", "client_id", "status", "focus", "about"];
         fieldsToSet.forEach((field) => {
-          if (projectData[field]) {
-            setValue(field, projectData[field]);
+          if (gmbData[field] !== undefined) {
+            setValue(field, gmbData[field]);
           }
         });
 
-        setValue("date", projectData.date);
+        setValue("date", gmbData.date);
         setValue("last_update_date", new Date().toISOString());
       } catch (err) {
-        toast.error("Failed to load project or clients");
+        toast.error("Failed to load GMB or clients");
         console.error("Fetch error:", err);
       } finally {
         setIsLoading(false);
       }
     };
+
     fetchData();
   }, [id, setValue]);
 
@@ -59,9 +60,9 @@ const EditProject = () => {
         last_update_date: new Date().toISOString(),
       };
 
-      await updateProject(id, payload);
-      toast.success("Project updated!");
-      setTimeout(() => navigate("/"), 1000);
+      await updateGmb(id, payload);
+      toast.success("GMB updated!");
+      setTimeout(() => navigate("/gmbs"), 1000);
     } catch (err) {
       if (err.response?.data?.detail) {
         const errorDetails = err.response.data.detail;
@@ -71,7 +72,7 @@ const EditProject = () => {
         });
         toast.error("Validation errors occurred.");
       } else {
-        toast.error("Failed to update project");
+        toast.error("Failed to update GMB");
         console.error("Update error:", err);
       }
     }
@@ -99,26 +100,12 @@ const EditProject = () => {
           : [{ value: "", label: "No clients available", disabled: true }]),
       ],
     },
-    {
-      name: "project_type",
-      label: "Project Type",
-      required: true,
-      type: "select",
-      options: [
-        { value: "", label: "Select a type", disabled: true },
-        { value: "Blog", label: "Blog" },
-        { value: "Service", label: "Service" },
-      ],
-    },
-
-    { name: "focus", label: "Focus", required: true, type: "text" },
-    { name: "about", label: "About", required: true, type: "text" },
   ];
 
   return (
     <>
-      <div >
-        <h1 className="text-4xl font-bold mb-6">Edit Project</h1>
+      <div>
+        <h1 className="text-4xl font-bold mb-6">Edit GMB</h1>
         {isLoading ? (
           <div>Loading...</div>
         ) : (
@@ -172,7 +159,6 @@ const EditProject = () => {
 
             <input type="hidden" {...register("date")} />
             <input type="hidden" {...register("last_update_date")} />
-            <input type="hidden" {...register("status")} />
 
             <button
               type="submit"
@@ -189,4 +175,4 @@ const EditProject = () => {
   );
 };
 
-export default EditProject;
+export default EditGMB;

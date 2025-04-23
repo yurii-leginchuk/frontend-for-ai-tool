@@ -39,6 +39,18 @@ const Layout = ({ children }) => {
                 Clients List
               </NavLink>
               <NavLink
+                to="/gmbs"
+                className={({ isActive }) =>
+                  `text-lg font-medium transition-all duration-200 ease-in-out ${
+                   isActive
+                      ? "text-yellow-300"
+                      : "text-white hover:text-yellow-300"
+                  }`
+                }
+              >
+                GMB List
+              </NavLink>
+              <NavLink
                 to="/add-client"
                 className={({ isActive }) =>
                   `text-lg font-medium transition-all duration-200 ease-in-out ${
@@ -62,6 +74,21 @@ const Layout = ({ children }) => {
               >
                 Add Project
               </NavLink>
+
+              <NavLink
+                to="/add-gmb"
+                className={({ isActive }) =>
+                  `text-lg font-medium transition-all duration-200 ease-in-out ${
+                isActive
+                      ? "text-yellow-300"
+                      : "text-white hover:text-yellow-300"
+                  }`
+                }
+              >
+                Add GMB
+              </NavLink>
+
+
             </nav>
           </div>
         </div>

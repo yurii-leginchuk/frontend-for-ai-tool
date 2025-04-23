@@ -1,11 +1,11 @@
 import { useForm } from "react-hook-form";
 import { toast, ToastContainer } from "react-toastify";
-import { createProject } from "../api/project.js";
+import { createGmb } from "../api/gmb.js";
 import { getClients } from "../api/client.js";
 import { useEffect, useState } from "react";
 import uniqid from "uniqid";
 
-const AddProject = () => {
+const AddGMB = () => {
   const {
     register,
     handleSubmit,
@@ -49,8 +49,8 @@ const AddProject = () => {
         status: "draft",
       };
 
-      await createProject(payload);
-      toast.success("Project saved!");
+      await createGmb(payload);
+      toast.success("GMB saved!");
       reset();
     } catch (err) {
       if (err.response?.data?.detail) {
@@ -72,8 +72,8 @@ const AddProject = () => {
 
         toast.error("Validation errors occurred. Check the highlighted fields.");
       } else {
-        toast.error("Failed to save project");
-        console.error("Error saving project:", err);
+        toast.error("Failed to save GMB");
+        console.error("Error saving GMB:", err);
       }
     }
   };
@@ -97,19 +97,6 @@ const AddProject = () => {
           : [{ value: "none", label: "No clients available", disabled: true }]),
       ],
     },
-    {
-      name: "project_type",
-      label: "Project Type",
-      required: true,
-      type: "select",
-      options: [
-        { value: "none", label: "Select a project type", disabled: true },
-        { value: "Blog", label: "Blog" },
-        { value: "Service", label: "Service" },
-      ],
-    },
-    { name: "focus", label: "Focus", required: true, type: "text" },
-    { name: "about", label: "About", required: true, type: "text" },
   ];
 
   const hiddenFields = [
@@ -121,7 +108,7 @@ const AddProject = () => {
   return (
     <>
       <div>
-        <h1 className="text-4xl font-bold mb-6">Add Project</h1>
+        <h1 className="text-4xl font-bold mb-6">Add GMB</h1>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
           {visibleFields.map(({ name, label, required, type, options }) => (
             <div key={name}>
@@ -201,4 +188,4 @@ const AddProject = () => {
   );
 };
 
-export default AddProject;
+export default AddGMB;
