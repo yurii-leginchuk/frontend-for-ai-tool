@@ -1,5 +1,5 @@
 from fastapi import APIRouter, HTTPException
-from app.models.gmb import GmbIn, GmbOut
+from app.models.gmb import GmbIn, GmbOut, GmbUpdateOut, GmbUpdateIn
 from app.crud.gmb import  create_gmb, get_gmb, get_gmb_by_id, update_gmb, delete_gmb
 from typing import List
 
@@ -30,11 +30,11 @@ async def get_one(gmb_id: str):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to get Gmb: {str(e)}")
 
-@router.put("/{gmb_id}", response_model=GmbOut)
-async def update_one(gmb_id: str, update_data: GmbIn):
+@router.put("/{gmb_id}", response_model=GmbUpdateOut)
+async def update_one(gmb_id: str, update_data: GmbUpdateIn):
     try:
         updated = await update_gmb(gmb_id, update_data.model_dump())
-        return GmbOut(**updated)
+        return GmbUpdateOut(**updated)
     except HTTPException as e:
         raise e
     except Exception as e:

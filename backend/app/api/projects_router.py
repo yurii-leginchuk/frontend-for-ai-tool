@@ -1,5 +1,5 @@
 from fastapi import APIRouter, HTTPException
-from app.models.project import ProjectIn, ProjectOut
+from app.models.project import ProjectIn, ProjectOut, ProjectUpdateIn, ProjectUpdateOut
 from app.crud.projects import create_project, get_projects, get_project_by_id, update_project, delete_project
 from typing import List
 
@@ -30,11 +30,11 @@ async def get_one(project_id: str):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to get project: {str(e)}")
 
-@router.put("/{project_id}", response_model=ProjectOut)
-async def update_one(project_id: str, update_data: ProjectIn):
+@router.put("/{project_id}", response_model=ProjectUpdateOut)
+async def update_one(project_id: str, update_data: ProjectUpdateIn):
     try:
         updated = await update_project(project_id, update_data.model_dump())
-        return ProjectOut(**updated)
+        return ProjectUpdateOut(**updated)
     except HTTPException as e:
         raise e
     except Exception as e:

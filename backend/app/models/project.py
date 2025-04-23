@@ -7,6 +7,7 @@ class ProjectIn(BaseModel):
     project_type: str
     focus: str
     about: str
+    # article: Optional[str]
 
     # Hidden fields
     date: Optional[str] = None
@@ -14,4 +15,17 @@ class ProjectIn(BaseModel):
     status: Optional[str] = None
 
 class ProjectOut(ProjectIn):
+    id: str
+
+class ProjectUpdateIn(BaseModel):
+    name: Optional[str] = None
+    client_id: Optional[str] = None
+    project_type: Optional[str] = None
+    focus: Optional[str] = None
+    about: Optional[str] = None
+    status: Optional[str] = None
+    date: Optional[str] = None
+    last_update_date: Optional[str] = None
+
+class ProjectUpdateOut(ProjectUpdateIn):
     id: str

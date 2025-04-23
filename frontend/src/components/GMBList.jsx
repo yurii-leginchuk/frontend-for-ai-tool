@@ -1,21 +1,22 @@
 import { useState, useEffect, useMemo } from "react";
 import { getGmb, deleteGmb } from "../api/gmb.js";
 import { getClients } from "../api/client";
-import GenericTable from "./GenericTable";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
+import {formatDate, cleanHtmlMarkers} from "../utils/index.js";
 
 const GMBList = () => {
-  const [projects, setProjects] = useState([]);
+  const [gmbs, setGmbs] = useState([]);
   const [clients, setClients] = useState([]);
   const [clientFilter, setClientFilter] = useState("");
+  const [activeGmbId, setActiveGmbId] = useState(null);
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [projectRes, clientRes] = await Promise.all([
+        const [gmbRes, clientRes] = await Promise.all([
           getGmb(),
           getClients(),
         ]);
@@ -24,14 +25,13 @@ const GMBList = () => {
           (clientRes.data || []).map((c) => [c.id, c.name])
         );
 
-        const enriched = (projectRes.data || []).map((p) => ({
-          ...p,
-          client_name: clientMap.get(p.client_id) || "Unknown Client",
+        const enriched = (gmbRes.data || []).map((g) => ({
+          ...g,
+          client_name: clientMap.get(g.client_id) || "Unknown Client",
         }));
 
-        setProjects(enriched);
+        setGmbs(enriched);
         setClients(clientRes.data || []);
-
 
         const clientIdFromUrl = searchParams.get("clientId");
         if (clientIdFromUrl) {
@@ -46,93 +46,24 @@ const GMBList = () => {
   }, [searchParams]);
 
   const filteredData = useMemo(() => {
-    if (!clientFilter) return projects;
-    return projects.filter((p) => p.client_id === clientFilter);
-  }, [projects, clientFilter]);
+    if (!clientFilter) return gmbs;
+    return gmbs.filter((g) => g.client_id === clientFilter);
+  }, [gmbs, clientFilter]);
 
-  const columns = useMemo(
-    () => [
-      {
-        accessorKey: "name",
-        header: "Name",
-      },
-      {
-        accessorKey: "client_name",
-        header: "Client",
-      },
-      {
-        accessorKey: "date",
-        header: "Created",
-        cell: (info) =>
-          formatDate(info.getValue()),
-      },
-      {
-        accessorKey: "last_update_date",
-        header: "Updated",
-        cell: (info) =>
-          formatDate(info.getValue()),
-      },
-      {
-        accessorKey: "status",
-        header: "Status",
-      },
-      {
-        accessorKey: "actions",
-        header: "Actions",
-        enableSorting: false,
-        cell: ({ row }) => {
-          const handleDelete = async () => {
-            if (window.confirm("Delete GMB?")) {
-              try {
-                await deleteGmb(row.original.id);
-                toast.success("GMB deleted");
-                setProjects((prev) =>
-                  prev.filter((p) => p.id !== row.original.id)
-                );
-              } catch (err) {
-                toast.error("Failed to delete");
-              }
-            }
-          };
+  const toggleGmbDetails = (gmbId) => {
+    setActiveGmbId(activeGmbId === gmbId ? null : gmbId);
+  };
 
-          return (
-            <div className="flex space-x-2">
-              <button
-                onClick={() => navigate(`/edit-gmb/${row.original.id}`)}
-                className="bg-blue-600 text-white px-4 py-2 rounded"
-              >
-                Edit
-              </button>
-              <button
-                onClick={handleDelete}
-                className="bg-red-600 text-white px-3 py-1 rounded"
-              >
-                Delete
-              </button>
-            </div>
-          );
-        },
-      },
-    ],
-    [navigate, setProjects]
-  );
-
-
-  const formatDate = (dateString) => {
-    if (!dateString) return "N/A";
-    const date = new Date(dateString);
-    if (isNaN(date.getTime())) return "Invalid Date";
-
-    const formatter = new Intl.DateTimeFormat("en-US", {
-      month: "2-digit",
-      day: "2-digit",
-      year: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-      hour12: true,
-    });
-
-    return formatter.format(date).replace(",", "");
+  const handleDelete = async (gmbId) => {
+    if (window.confirm("Delete GMB?")) {
+      try {
+        await deleteGmb(gmbId);
+        toast.success("GMB deleted");
+        setGmbs((prev) => prev.filter((g) => g.id !== gmbId));
+      } catch (err) {
+        toast.error("Failed to delete");
+      }
+    }
   };
 
   return (
@@ -156,12 +87,79 @@ const GMBList = () => {
           </select>
         </div>
 
-        <GenericTable
-          title=""
-          data={filteredData}
-          columns={columns}
-          filterKey="name"
-        />
+        <ul className="space-y-4">
+          {filteredData.map((gmb) => (
+            <li
+              key={gmb.id}
+              className="border rounded-lg shadow-sm p-4 bg-white"
+            >
+              <div
+                className="flex justify-between items-center cursor-pointer"
+                onClick={() => toggleGmbDetails(gmb.id)}
+              >
+                <div>
+                  <h2 className="text-lg font-semibold">{gmb.name}</h2>
+                  <div className="text-sm text-gray-500">
+                    <span>Client: {gmb.client_name}</span> |{" "}
+                    <span>Status: {gmb.status}</span>
+                  </div>
+                  <div className="text-sm text-gray-500">
+                    <span>Created: {formatDate(gmb.date)}</span> |{" "}
+                    <span>Updated: {formatDate(gmb.last_update_date)}</span>
+                  </div>
+                </div>
+                <button className="text-gray-500">
+                  {activeGmbId === gmb.id ? "▲" : "▼"}
+                </button>
+              </div>
+
+              {activeGmbId === gmb.id && (
+                <div className="mt-4 border-t pt-4">
+                  <p>
+                    <strong>Name:</strong> {gmb.name}
+                  </p>
+                  <p>
+                    <strong>Client:</strong> {gmb.client_name}
+                  </p>
+                  <p>
+                    <strong>Status:</strong> {gmb.status}
+                  </p>
+                  <p>
+                    <strong>Created:</strong> {formatDate(gmb.date)}
+                  </p>
+                  <p>
+                    <strong>Updated:</strong> {formatDate(gmb.last_update_date)}
+                  </p>
+
+                  {gmb.status === "finished" && (
+                    <p>
+                      <strong>Article:</strong> <code
+                        className="block w-full max-h-[400px] overflow-y-auto bg-gray-900 text-white p-4 rounded font-mono text-sm whitespace-pre-wrap"
+                    >
+                      { cleanHtmlMarkers(gmb.article) }
+                    </code>
+                    </p>
+                  )}
+
+                  <div className="flex space-x-2 mt-4">
+                    <button
+                      onClick={() => navigate(`/edit-gmb/${gmb.id}`)}
+                      className="bg-blue-600 text-white px-4 py-2 rounded"
+                    >
+                      Edit
+                    </button>
+                    <button
+                      onClick={() => handleDelete(gmb.id)}
+                      className="bg-red-600 text-white px-4 py-2 rounded"
+                    >
+                      Delete
+                    </button>
+                  </div>
+                </div>
+              )}
+            </li>
+          ))}
+        </ul>
       </div>
       <ToastContainer />
     </>
