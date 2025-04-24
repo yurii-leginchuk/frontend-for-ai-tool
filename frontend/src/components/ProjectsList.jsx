@@ -146,6 +146,16 @@ const ProjectsList = () => {
                     </p>
                   )}
 
+                  <p>
+                    <strong>Keywords:</strong>{" "}
+                    {project.keywords.join(',') || "N/A"}
+                  </p>
+
+                   <p>
+                    <strong>Length:</strong>{" "}
+                    {project.length || "N/A"}
+                  </p>
+
                   <div className="flex space-x-2 mt-4">
                     <button
                       onClick={() => navigate(`/edit-project/${project.id}`)}

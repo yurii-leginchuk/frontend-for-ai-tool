@@ -9,6 +9,7 @@ import ClientsList from "./components/ClientsList.jsx";
 import AddGmb from "./components/AddGmb.jsx";
 import GMBList from "./components/GMBList.jsx";
 import EditGMB from "./components/EditGmb.jsx";
+import WebsiteList from "./components/WebsitesList.jsx";
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
           <Route path="/" element={<ProjectsList />} />
           <Route path="/clients" element={<ClientsList />} />
           <Route path="/gmbs" element={<GMBList />} />
+          <Route path="/websites" element={<WebsiteList />} />
           <Route path="/add-client" element={<AddClient />} />
           <Route path="/add-project" element={<AddProject />} />
           <Route path="/add-gmb" element={<AddGmb />} />

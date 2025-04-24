@@ -15,6 +15,19 @@ const Layout = ({ children }) => {
             {/* Navigation Menu */}
             <nav className="flex space-x-8">
               <NavLink
+                to="/websites"
+                className={({ isActive }) =>
+                  `text-lg  font-medium transition-all duration-200 ease-in-out ${
+                    isActive
+                      ? "text-yellow-300"
+                      : "text-white hover:text-yellow-300"
+                  }`
+                }
+              >
+                Websites
+              </NavLink>
+
+              <NavLink
                 to="/"
                 className={({ isActive }) =>
                   `text-lg  font-medium transition-all duration-200 ease-in-out ${

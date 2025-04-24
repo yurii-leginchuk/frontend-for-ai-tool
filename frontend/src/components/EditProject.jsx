@@ -4,6 +4,7 @@ import { getClients } from "../api/client";
 import { getProjectById, updateProject } from "../api/project";
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import {validateKeywords} from "../utils/index.js";
 
 const EditProject = () => {
   const { id } = useParams();
@@ -33,7 +34,7 @@ const EditProject = () => {
 
         setClients(clientList);
 
-        const fieldsToSet = ["name", "client_id", "project_type", "status", "focus", "about"];
+        const fieldsToSet = ["name", "client_id", "project_type", "status", "focus", "about", 'length', 'keywords'];
         fieldsToSet.forEach((field) => {
           if (projectData[field]) {
             setValue(field, projectData[field]);
@@ -42,6 +43,13 @@ const EditProject = () => {
 
         setValue("date", projectData.date);
         setValue("last_update_date", new Date().toISOString());
+
+         const keywordsString = Array.isArray(projectData.keywords)
+        ? projectData.keywords.join(", ")
+        : projectData.keywords || "";
+
+        setValue("keywords", keywordsString, { shouldDirty: true });
+
       } catch (err) {
         toast.error("Failed to load project or clients");
         console.error("Fetch error:", err);
@@ -53,9 +61,15 @@ const EditProject = () => {
   }, [id, setValue]);
 
   const onSubmit = async (data) => {
+    const keywordsList = data.keywords
+        .split(",")
+        .map((kw) => kw.trim())
+        .filter((kw) => kw.length > 0);
+
     try {
       const payload = {
         ...data,
+         keywords: keywordsList,
         last_update_date: new Date().toISOString(),
       };
 
@@ -113,6 +127,8 @@ const EditProject = () => {
 
     { name: "focus", label: "Focus", required: true, type: "text" },
     { name: "about", label: "About", required: true, type: "text" },
+    { name: "length", label: "Length", required: true, type: "text", inputType: 'number' },
+    { name: "keywords", label: "Keywords (separate keywords with an ex comma: kw1,kw2,kw3)", required: true, type: "text" },
   ];
 
   return (
@@ -123,7 +139,7 @@ const EditProject = () => {
           <div>Loading...</div>
         ) : (
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
-            {fields.map(({ name, label, required, type, options }) => (
+            {fields.map(({ name, label, required, type, inputType, options }) => (
               <div key={name}>
                 <label className="block font-medium mb-1" htmlFor={name}>
                   {label}
@@ -153,9 +169,10 @@ const EditProject = () => {
                 ) : (
                   <input
                     id={name}
-                    type="text"
+                    type={inputType ? inputType : "text"}
                     {...register(name, {
                       required: required ? "This field is required" : false,
+                      validate: name === "keywords" ? validateKeywords : undefined,
                     })}
                     className={`w-full border rounded p-2 focus:outline-none focus:ring-2 focus:ring-blue-400 ${
                       errors[name] ? "border-red-500" : "border-gray-300"

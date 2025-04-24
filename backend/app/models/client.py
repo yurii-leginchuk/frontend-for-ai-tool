@@ -1,5 +1,5 @@
 from pydantic import BaseModel, HttpUrl
-from typing import Optional
+from typing import Optional, List
 
 class ClientIn(BaseModel):
     name: str
@@ -10,6 +10,9 @@ class ClientIn(BaseModel):
     client_related_information: str
     tone_for_blogs: str
     tone_for_articles: str
+    chatgpt_prompt: str
+    deepseek_prompt: str
+    keywords: List[str]
 
     # Hidden fields
     date: Optional[str] = None

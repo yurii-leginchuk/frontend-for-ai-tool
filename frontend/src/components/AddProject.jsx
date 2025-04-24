@@ -42,9 +42,17 @@ const AddProject = () => {
   const onSubmit = async (data) => {
     try {
       const now = new Date().toISOString();
+
+      const keywordsList = data.keywords
+        .split(",")
+        .map((kw) => kw.trim())
+        .filter((kw) => kw.length > 0);
+
+
       const payload = {
         ...data,
         date: now,
+        keywords: keywordsList,
         last_update_date: now,
         status: "draft",
       };
@@ -110,6 +118,8 @@ const AddProject = () => {
     },
     { name: "focus", label: "Focus", required: true, type: "text" },
     { name: "about", label: "About", required: true, type: "text" },
+    { name: "length", label: "Length", required: true, type: "text", inputType: 'number' },
+    { name: "keywords", label: "Keywords (separate keywords with an ex comma: kw1,kw2,kw3)", required: true, type: "text" },
   ];
 
   const hiddenFields = [
@@ -123,7 +133,7 @@ const AddProject = () => {
       <div>
         <h1 className="text-4xl font-bold mb-6">Add Project</h1>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
-          {visibleFields.map(({ name, label, required, type, options }) => (
+          {visibleFields.map(({ name, label, required, type, inputType, options }) => (
             <div key={name}>
               <label className="block font-medium mb-1" htmlFor={name}>
                 {label}
@@ -154,7 +164,7 @@ const AddProject = () => {
               ) : (
                 <input
                   id={name}
-                  type="text"
+                  type={inputType ? inputType : 'text'}
                   {...register(name, {
                     required: required ? "This field is required" : false,
                   })}

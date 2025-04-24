@@ -2,6 +2,7 @@ import { useForm } from "react-hook-form";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { createClient } from "../api/client.js";
+import {validatePrompt, validateKeywords} from "../utils/index.js";
 
 
 const AddClient = () => {
@@ -16,8 +17,15 @@ const AddClient = () => {
   const onSubmit = async (data) => {
     try {
       const now = new Date().toISOString();
+
+      const keywordsList = data.keywords
+        .split(",")
+        .map((kw) => kw.trim())
+        .filter((kw) => kw.length > 0);
+
       const payload = {
         ...data,
+          keywords: keywordsList,
         date: now,
         last_update_date: now,
         status: "draft",
@@ -77,6 +85,9 @@ const AddClient = () => {
     { name: "client_related_information", label: "Client Related Information", required: true, textarea: true },
     { name: "tone_for_blogs", label: "Tone For Blogs", required: true, textarea: true },
     { name: "tone_for_articles", label: "Tone For Articles", required: true, textarea: true },
+    { name: "chatgpt_prompt", label: "Chat GPT Prompt", required: true, textarea: true },
+    { name: "deepseek_prompt", label: "Deepseek Prompt", required: true, textarea: true },
+    { name: "keywords", label: "Keywords (separate keywords with an ex comma: kw1,kw2,kw3)", required: true, textarea: false },
   ];
 
   // Hidden fields (non-required)
@@ -108,7 +119,13 @@ const AddClient = () => {
                 <textarea
                   id={name}
                   rows={4}
-                  {...register(name, { required: required ? "This field is required" : false })}
+                  {...register(name, {
+                    required: required ? "This field is required" : false,
+                    validate:
+                      name === "chatgpt_prompt" || name === "deepseek_prompt"
+                        ? validatePrompt
+                        : undefined,
+                  })}
                   className={`w-full border rounded p-2 resize-y focus:outline-none focus:ring-2 focus:ring-blue-400 ${
                     errors[name] ? "border-red-500" : "border-gray-300"
                   }`}
@@ -117,7 +134,10 @@ const AddClient = () => {
                 <input
                   id={name}
                   type="text"
-                  {...register(name, { required: required ? "This field is required" : false })}
+                  {...register(name, {
+                    required: required ? "This field is required" : false,
+                    validate: name === "keywords" ? validateKeywords : undefined,
+                  })}
                   className={`w-full border rounded p-2 focus:outline-none focus:ring-2 focus:ring-blue-400 ${
                     errors[name] ? "border-red-500" : "border-gray-300"
                   }`}

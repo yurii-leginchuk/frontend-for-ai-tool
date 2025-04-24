@@ -123,6 +123,28 @@ const ClientsList = () => {
                     <strong>Tone for Articles:</strong>{" "}
                     {client.tone_for_articles || "N/A"}
                   </p>
+
+                   <p>
+                      <strong>Chat GPT Prompt:</strong> <code
+                        className="block w-full max-h-[400px] overflow-y-auto bg-gray-900 text-white p-4 rounded font-mono text-sm whitespace-pre-wrap"
+                    >
+                      { cleanHtmlMarkers(client.chatgpt_prompt) }
+                    </code>
+                    </p>
+
+                  <p>
+                      <strong>Deepseek Prompt:</strong> <code
+                        className="block w-full max-h-[400px] overflow-y-auto bg-gray-900 text-white p-4 rounded font-mono text-sm whitespace-pre-wrap"
+                    >
+                      { cleanHtmlMarkers(client.deepseek_prompt) }
+                    </code>
+                    </p>
+
+                  <p>
+                    <strong>Keywords:</strong>{" "}
+                    {client.keywords.join(',') || "N/A"}
+                  </p>
+
                   <div className="flex space-x-2 mt-4">
                     <button
                       onClick={() => navigate(`/edit-client/${client.id}`)}
