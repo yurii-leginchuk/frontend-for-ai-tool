@@ -142,7 +142,7 @@ const ClientsList = () => {
 
                   <p>
                     <strong>Keywords:</strong>{" "}
-                    {client.keywords.join(',') || "N/A"}
+                    {client.keywords && client.keywords.length ? client.keywords.join(',') : "N/A"}
                   </p>
 
                   <div className="flex space-x-2 mt-4">

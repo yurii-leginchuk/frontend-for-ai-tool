@@ -147,8 +147,8 @@ const ProjectsList = () => {
                   )}
 
                   <p>
-                    <strong>Keywords:</strong>{" "}
-                    {project.keywords.join(',') || "N/A"}
+                    <strong>Keywords:</strong>
+                     {project.keywords && project.keywords.length ? project.keywords.join(',') : "N/A"}
                   </p>
 
                    <p>
