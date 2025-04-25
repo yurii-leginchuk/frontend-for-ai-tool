@@ -5,7 +5,7 @@ services:
     ports:
       - "8000:8000"
     environment:
-      - MONGO_URI=mongodb://mongo:27018
+      - MONGO_URI=mongodb://mongo:27019
     depends_on:
       mongo:
         condition: service_healthy
@@ -31,7 +31,7 @@ services:
       - "8081:8081"
     environment:
       ME_CONFIG_MONGODB_SERVER: mongo
-      ME_CONFIG_MONGODB_PORT: 27018
+      ME_CONFIG_MONGODB_PORT: 27019
       ME_CONFIG_BASICAUTH_USERNAME: admin
       ME_CONFIG_BASICAUTH_PASSWORD: admin
     depends_on:
@@ -43,12 +43,12 @@ services:
   mongo:
     image: mongo
     ports:
-      - "27018:27018"
+      - "27019:27019"
     volumes:
       - mongo-data:/data/db
-    command: mongod --port 27018
+    command: mongod --port 27019
     healthcheck:
-      test: [ "CMD", "mongosh", "--port", "27018", "--eval", "db.runCommand({ ping: 1 })" ]
+      test: [ "CMD", "mongosh", "--port", "27019", "--eval", "db.runCommand({ ping: 1 })" ]
       interval: 10s
       timeout: 5s
       retries: 5

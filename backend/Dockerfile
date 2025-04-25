@@ -15,5 +15,5 @@ RUN poetry config virtualenvs.create false \
 
 COPY ./app /app/app
 
-CMD ["sh", "-c", "until nc -z -v -w30 mongo 27018; do echo 'Waiting for MongoDB...'; sleep 5; done; uvicorn app.main:app --host 0.0.0.0 --port 8000"]
+CMD ["sh", "-c", "until nc -z -v -w30 mongo 27019; do echo 'Waiting for MongoDB...'; sleep 5; done; uvicorn app.main:app --host 0.0.0.0 --port 8000"]
 
