@@ -24,6 +24,9 @@ def create_app() -> FastAPI:
         response.headers["Access-Control-Allow-Origin"] = "*"
         response.headers["Access-Control-Allow-Methods"] = "GET, POST, PUT, DELETE, OPTIONS"
         response.headers["Access-Control-Allow-Headers"] = "Content-Type"
+
+        response.headers["Content-Security-Policy"] = "upgrade-insecure-requests"
+
         return response
 
     app.include_router(clients_router, prefix="/clients", tags=["Clients"])
