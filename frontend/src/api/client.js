@@ -1,5 +1,6 @@
 import api from "../services/api";
 
+
 export const createClient = (data) => api.post("/clients/create", data);
 export const getClients = () => api.get("/clients");
 export const getClientById = (id) => api.get(`/clients/${id}`);

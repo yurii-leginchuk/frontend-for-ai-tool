@@ -6,6 +6,10 @@ import { toast, ToastContainer } from "react-toastify";
 
 import {formatDate, cleanHtmlMarkers} from "../utils/index.js";
 
+
+
+
+
 const ClientsList = () => {
   const [clients, setClients] = useState([]);
   const [projectCounts, setProjectCounts] = useState({});

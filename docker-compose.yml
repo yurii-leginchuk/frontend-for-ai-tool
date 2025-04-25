@@ -5,7 +5,7 @@ services:
     ports:
       - "8000:8000"
     environment:
-      - MONGO_URI=mongodb://mongo:27019
+      - MONGO_URI=mongodb://root:xZ3R9n7K2tL8vB5mY6QpJ4wC1hE0aUdG@mongo:27019/clients_db?authSource=admin
     depends_on:
       mongo:
         condition: service_healthy
@@ -46,9 +46,13 @@ services:
       - "27019:27019"
     volumes:
       - mongo-data:/data/db
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: xZ3R9n7K2tL8vB5mY6QpJ4wC1hE0aUdG
+      MONGO_INITDB_DATABASE: clients_db
     command: mongod --port 27019
     healthcheck:
-      test: [ "CMD", "mongosh", "--port", "27019", "--eval", "db.runCommand({ ping: 1 })" ]
+      test: ["CMD", "mongosh", "--port", "27019", "-u", "root", "-p", "xZ3R9n7K2tL8vB5mY6QpJ4wC1hE0aUdG", "--authenticationDatabase", "admin", "--eval", "db.adminCommand('ping')"]
       interval: 10s
       timeout: 5s
       retries: 5
